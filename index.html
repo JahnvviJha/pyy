@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="The Man Who Never Stopped Walking — A heartfelt birthday tribute to a father who gave everything.">
+    <meta name="theme-color" content="#0a0e27">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>The Man Who Never Stopped Walking</title>
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png" as="image">
+    <link rel="preload" href="styles.css" as="style">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- LOADING SCREEN                                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-icon">
+                <svg viewBox="0 0 100 100" width="80" height="80">
+                    <path d="M50 10 L50 90" stroke="rgba(201,161,54,0.3)" stroke-width="2" fill="none"/>
+                    <circle class="loading-dot" cx="50" cy="10" r="4" fill="#e8c547"/>
+                </svg>
+            </div>
+            <h2 class="loading-title">A story is being prepared for you...</h2>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <p class="loading-progress" id="loadingProgress">0%</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- AUDIO TOGGLE                                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <button class="audio-toggle" id="audioToggle" aria-label="Toggle ambient sound">
+        <svg class="audio-icon audio-on" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <svg class="audio-icon audio-off" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="23" y1="9" x2="17" y2="15"/>
+            <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+    </button>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER NAVIGATION DOTS                             -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <nav class="chapter-nav" id="chapterNav" aria-label="Chapter navigation">
+        <div class="nav-dot active" data-chapter="0" aria-label="Chapter 1: Introduction">
+            <span class="dot-label">Introduction</span>
+        </div>
+        <div class="nav-dot" data-chapter="1" aria-label="Chapter 2: The Journey">
+            <span class="dot-label">The Journey</span>
+        </div>
+        <div class="nav-dot" data-chapter="2" aria-label="Chapter 3: The Choices">
+            <span class="dot-label">The Choices</span>
+        </div>
+        <div class="nav-dot" data-chapter="3" aria-label="Chapter 4: Silent Sacrifices">
+            <span class="dot-label">Sacrifices</span>
+        </div>
+        <div class="nav-dot" data-chapter="4" aria-label="Chapter 5: Everything He Built">
+            <span class="dot-label">Everything He Built</span>
+        </div>
+        <div class="nav-dot" data-chapter="5" aria-label="Chapter 6: Roots & Branches">
+            <span class="dot-label">Roots &amp; Branches</span>
+        </div>
+        <div class="nav-dot" data-chapter="6" aria-label="Chapter 7: The Real Hero">
+            <span class="dot-label">The Real Hero</span>
+        </div>
+        <div class="nav-dot" data-chapter="7" aria-label="Chapter 8: Happy Birthday">
+            <span class="dot-label">Happy Birthday</span>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 1: INTRODUCTION                             -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-intro" id="chapter-intro" data-chapter-name="The Beginning">
+        <canvas class="stars-canvas" id="starsCanvas"></canvas>
+        <div class="chapter-content">
+            <div class="intro-badge fade-in-up">Chapter One</div>
+            <h1 class="intro-title" id="introTitle">
+                <span class="title-line">The Man Who</span>
+                <span class="title-line">Never Stopped</span>
+                <span class="title-line accent">Walking</span>
+            </h1>
+            <p class="intro-subtitle fade-in-up" data-delay="1500">
+                A story about a man who walked through life<br>
+                so his family could fly.
+            </p>
+            <div class="intro-character fade-in-up" data-delay="2000">
+                <img src="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png" 
+                     alt="A man walking forward" 
+                     class="character-sprite intro-sprite"
+                     loading="eager">
+            </div>
+            <button class="begin-btn fade-in-up" data-delay="2500" id="beginBtn">
+                <span>Begin the Journey</span>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
+        <div class="scroll-indicator" id="scrollIndicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 2: THE JOURNEY                              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-journey" id="chapter-journey" data-chapter-name="The Journey">
+        <div class="journey-bg-layers">
+            <div class="journey-sky" data-parallax data-speed="0.1"></div>
+            <div class="journey-mountains" data-parallax data-speed="0.3"></div>
+            <div class="journey-ground" data-parallax data-speed="0.5"></div>
+        </div>
+        <div class="chapter-content">
+            <div class="chapter-badge fade-in-up">Chapter Two</div>
+            <h2 class="chapter-title fade-in-up">The Journey</h2>
+            <div class="journey-video-container fade-in-up scale-in">
+                <video class="journey-video" id="journeyVideo" 
+                       src="assets/make_the_character_a_bit_young.mp4" 
+                       muted loop playsinline 
+                       preload="metadata"
+                       poster="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png">
+                </video>
+                <div class="video-overlay"></div>
+            </div>
+            <div class="glass-card journey-text fade-in-up" data-delay="300">
+                <p>Long before the world woke up,</p>
+                <p>a father was already chasing dreams—</p>
+                <p class="highlight">not for himself,</p>
+                <p>but for the family he loved with all his heart.<br>Every step, every sacrifice, and every sunrise
+helped build the life we cherish today.</p>
+            </div>
+        </div>
+        <div class="journey-path">
+            <div class="path-line"></div>
+            <div class="path-footsteps">
+                <span class="footstep">👣</span>
+                <span class="footstep">👣</span>
+                <span class="footstep">👣</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 3: THE CHOICES HE MADE                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-choices" id="chapter-choices" data-chapter-name="The Choices He Made">
+        <div class="choices-bg"></div>
+        <div class="chapter-content">
+            <div class="chapter-badge fade-in-up">Chapter Three</div>
+            <h2 class="chapter-title fade-in-up">The Choices He Made</h2>
+            
+            <div class="choices-character fade-in-up">
+                <img src="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png" 
+                     alt="Standing at the crossroads" 
+                     class="character-sprite choices-sprite">
+            </div>
+
+            <div class="crossroads-container" data-stagger="200">
+                <div class="choice-path choice-left fade-in-left" id="choiceLeft">
+                    <div class="choice-card glass-card">
+                        <div class="choice-icon">🌟</div>
+                        <h3>His Dreams</h3>
+                        <p class="choice-detail" style="display:none">He had dreams of his own. Ambitions. Passions. A life he could have lived just for himself.</p>
+                        <span class="tap-hint">Tap to reveal</span>
+                    </div>
+                </div>
+                <div class="choice-divider fade-in-up">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">or</span>
+                    <div class="divider-line"></div>
+                </div>
+                <div class="choice-path choice-right fade-in-right" id="choiceRight">
+                    <div class="choice-card glass-card selected">
+                        <div class="choice-icon">👨‍👩‍👧‍👦</div>
+                        <h3>His Family</h3>
+                        <p class="choice-detail" style="display:none">But he chose us. Every single time. Without hesitation. Without regret. He chose to give us everything.</p>
+                        <span class="tap-hint">Tap to reveal</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="choices-conclusion glass-card fade-in-up" data-delay="600">
+                <p class="typewriter-text">At every crossroad in life, he chose the path<br>that led to <strong>our</strong> happiness.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 4: SILENT SACRIFICES                         -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-sacrifices" id="chapter-sacrifices" data-chapter-name="Silent Sacrifices">
+        <canvas class="firefly-canvas" id="fireflyCanvas"></canvas>
+        <div class="moon-glow"></div>
+        <div class="chapter-content">
+            <div class="chapter-badge fade-in-up">Chapter Four</div>
+            <h2 class="chapter-title fade-in-up">Silent Sacrifices</h2>
+            
+            <div class="sacrifice-scene fade-in-up scale-in">
+                <img src="assets/Gemini_Generated_Image_mpa2xzmpa2xzmpa2.png" 
+                     alt="A man walking in the moonlight, his family safe inside a warm house" 
+                     class="scene-image sacrifice-image"
+                     data-parallax data-speed="0.15">
+                <div class="image-vignette"></div>
+            </div>
+
+            <div class="sacrifice-quotes" data-stagger="400">
+                <blockquote class="sacrifice-quote fade-in-up">
+                    <p>He stayed awake so we could sleep peacefully.</p>
+                </blockquote>
+                <blockquote class="sacrifice-quote fade-in-up">
+                    <p>He went without so we never had to.</p>
+                </blockquote>
+                <blockquote class="sacrifice-quote fade-in-up">
+                    <p>He carried the weight of the world<br>and made it look effortless.</p>
+                </blockquote>
+                <blockquote class="sacrifice-quote fade-in-up">
+                    <p class="highlight-gold">And he never once complained.</p>
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 5: EVERYTHING HE BUILT                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-built" id="chapter-built" data-chapter-name="Everything He Built">
+        <div class="petals-container" id="petalsBuilt"></div>
+        <div class="chapter-content">
+            <div class="chapter-badge fade-in-up">Chapter Five</div>
+            <h2 class="chapter-title fade-in-up">Everything He Built</h2>
+            
+            <div class="built-scene fade-in-up scale-in">
+                <img src="assets/Gemini_Generated_Image_2n0t772n0t772n0t.png" 
+                     alt="A warm house glowing with light, flowers blooming, a man walking on the path" 
+                     class="scene-image built-image"
+                     data-parallax data-speed="0.15">
+                <div class="image-glow warm-glow"></div>
+            </div>
+
+            <div class="built-text glass-card fade-in-up" data-delay="300">
+                <p>Brick by brick. Day by day.</p>
+                <p>He built more than walls and a roof.</p>
+                <p class="highlight-gold">He built a home filled with love,<br>warmth, and safety.</p>
+                <p>Every light in that window? That's his doing.<br>Every smile inside? That's his gift.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 6: ROOTS AND BRANCHES                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-roots" id="chapter-roots" data-chapter-name="Roots &amp; Branches">
+        <canvas class="golden-dust-canvas" id="goldenDustCanvas"></canvas>
+        <div class="falling-leaves" id="fallingLeaves"></div>
+        <div class="light-rays"></div>
+        <div class="chapter-content">
+            <div class="chapter-badge fade-in-up">Chapter Six</div>
+            <h2 class="chapter-title fade-in-up">Roots &amp; Branches</h2>
+            
+            <div class="roots-scene fade-in-up scale-in">
+                <img src="assets/Gemini_Generated_Image_ulzkj0ulzkj0ulzk.png" 
+                     alt="A magnificent golden tree with glowing roots, a man standing beside it" 
+                     class="scene-image roots-image"
+                     data-parallax data-speed="0.15">
+                <div class="root-glow"></div>
+            </div>
+
+            <div class="roots-text glass-card fade-in-up" data-delay="300">
+                <p>Like the roots of a great tree,</p>
+                <p>he held everything together — <em>unseen, unshaken.</em></p>
+                <p class="highlight-gold">His strength became our foundation.<br>His sacrifices became our wings.</p>
+                <p>Because of him, the branches could reach the sky.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 7: THE REAL HERO REVEAL                     -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-reveal" id="chapter-reveal" data-chapter-name="The Real Hero">
+        <div class="petals-container" id="petalsReveal"></div>
+        <div class="reveal-darkness" id="revealDarkness"></div>
+        <div class="chapter-content">
+            <div class="chapter-badge fade-in-up">Chapter Seven</div>
+            <h2 class="chapter-title shimmer-text fade-in-up">The Real Hero</h2>
+            
+            <p class="reveal-intro fade-in-up" data-delay="200">
+                This story isn't fiction.<br>
+                This hero is real.
+            </p>
+
+            <div class="reveal-frame fade-in-up scale-in" data-delay="500">
+                <div class="golden-frame">
+                    <img src="assets/Gemini_Generated_Image_ci1atpci1atpci1a.png" 
+                         alt="The real hero — a father standing proudly among roses and golden lights" 
+                         class="reveal-photo"
+                         id="revealPhoto">
+                </div>
+                <div class="frame-sparkles"></div>
+            </div>
+
+            <div class="reveal-text fade-in-up" data-delay="800">
+                <p class="reveal-statement">Every step in this story was his.</p>
+                <p class="reveal-statement">Every sacrifice was real.</p>
+                <p class="reveal-statement highlight-gold">Every moment of love — <em>all him.</em></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- CHAPTER 8: BIRTHDAY CELEBRATION FINALE              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="chapter chapter-finale" id="chapter-finale" data-chapter-name="Happy Birthday Papa">
+        <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+        <canvas class="fireworks-canvas" id="fireworksCanvas"></canvas>
+        <div class="chapter-content">
+            <div class="finale-cake fade-in-up" id="finaleCake">
+                <div class="cake-emoji">🎂</div>
+                <div class="candle-flames">
+                    <span class="flame">🕯️</span>
+                    <span class="flame">🕯️</span>
+                    <span class="flame">🕯️</span>
+                </div>
+            </div>
+
+            <div class="finale-message" data-stagger="600">
+                <p class="finale-line fade-in-up">You spent your life making sure<br>our wishes came true.</p>
+                <p class="finale-line fade-in-up">You never stopped walking.</p>
+                <p class="finale-line fade-in-up">You never stopped caring.</p>
+                <p class="finale-line fade-in-up">You never stopped being there.</p>
+                <p class="finale-line fade-in-up thank-you">Thank you for everything.</p>
+            </div>
+
+            <div class="finale-birthday fade-in-up" data-delay="3600">
+                <h2 class="birthday-text">
+                    <span class="birthday-line">Happy Birthday</span>
+                    <span class="birthday-name gradient-text">Papa</span>
+                    <span class="birthday-heart" id="birthdayHeart">❤️</span>
+                </h2>
+            </div>
+
+            <div class="finale-character fade-in-up" data-delay="4200">
+                <img src="assets/Gemini_Generated_Image_ef60hcef60hcef60 (1).png" 
+                     alt="Papa" 
+                     class="character-sprite finale-sprite">
+            </div>
+
+            <div class="tap-celebration" id="tapCelebration">
+                <p>✨ Tap anywhere for more celebrations ✨</p>
+            </div>
+
+            <button class="restart-btn" id="restartBtn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 4v6h6M23 20v-6h-6"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                </svg>
+                <span>Experience Again</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCRIPTS                                             -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Main Application -->
+    <script src="app.js"></script>
+
+</body>
+</html>
