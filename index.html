@@ -10,7 +10,7 @@
     <title>The Man Who Never Stopped Walking</title>
 
     <!-- Preload critical assets -->
-    <link rel="preload" href="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png" as="image">
+    <link rel="preload" href="assets/Gemini_Generated_Image_uysqrpuysqrpuysq_nobg.png" as="image">
     <link rel="preload" href="styles.css" as="style">
 
     <!-- Google Fonts -->
@@ -28,6 +28,12 @@
     <!-- ═══════════════════════════════════════════════════ -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-content">
+            <div class="spinner" id="loadingSpinner"></div>
+            <div class="start-content" id="startContent" style="display: none; text-align: center;">
+                <p style="color: rgba(255,255,255,0.7); font-size: 1.1rem; margin-bottom: 1.5rem; font-family: var(--font-primary);">Turn on your sound</p>
+                <button class="begin-btn" id="startBtn" style="font-size: 1.3rem; padding: 1rem 3rem;">Start Celebration</button>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 1rem;">(Click to enter)</p>
+            </div>
             <div class="loading-icon">
                 <svg viewBox="0 0 100 100" width="80" height="80">
                     <path d="M50 10 L50 90" stroke="rgba(201,161,54,0.3)" stroke-width="2" fill="none"/>
@@ -93,18 +99,21 @@
     <section class="chapter chapter-intro" id="chapter-intro" data-chapter-name="The Beginning">
         <canvas class="stars-canvas" id="starsCanvas"></canvas>
         <div class="chapter-content">
-            <div class="intro-badge fade-in-up">Chapter One</div>
+            <div class="intro-badge fade-in-up">Happy Birthday Papa ❤️</div>
             <h1 class="intro-title" id="introTitle">
                 <span class="title-line">The Man Who</span>
                 <span class="title-line">Never Stopped</span>
                 <span class="title-line accent">Walking</span>
             </h1>
             <p class="intro-subtitle fade-in-up" data-delay="1500">
-                A story about a man who walked through life<br>
-                so his family could fly.
+                Today isn't just a celebration of another year.
+            </p>
+            <p class="intro-subtitle fade-in-up" data-delay="2000" style="margin-top: -0.5rem;">
+                It's a celebration of every sacrifice, every effort,<br>
+                every silent act of love that helped shape our lives.
             </p>
             <div class="intro-character fade-in-up" data-delay="2000">
-                <img src="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png" 
+                <img src="assets/Gemini_Generated_Image_uysqrpuysqrpuysq_nobg.png" 
                      alt="A man walking forward" 
                      class="character-sprite intro-sprite"
                      loading="eager">
@@ -138,16 +147,13 @@
                        src="assets/make_the_character_a_bit_young.mp4" 
                        muted loop playsinline 
                        preload="metadata"
-                       poster="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png">
+                       poster="assets/Gemini_Generated_Image_uysqrpuysqrpuysq_nobg.png">
                 </video>
                 <div class="video-overlay"></div>
             </div>
             <div class="glass-card journey-text fade-in-up" data-delay="300">
-                <p>Long before the world woke up,</p>
-                <p>a father was already chasing dreams—</p>
-                <p class="highlight">not for himself,</p>
-                <p>but for the family he loved with all his heart.<br>Every step, every sacrifice, and every sunrise
-helped build the life we cherish today.</p>
+                <p>While the world measured success in achievements,</p>
+                <p class="highlight">we learned to measure it in the countless things<br>you did for us without expecting anything in return.</p>
             </div>
         </div>
         <div class="journey-path">
@@ -170,7 +176,7 @@ helped build the life we cherish today.</p>
             <h2 class="chapter-title fade-in-up">The Choices He Made</h2>
             
             <div class="choices-character fade-in-up">
-                <img src="assets/Gemini_Generated_Image_uysqrpuysqrpuysq.png" 
+                <img src="assets/Gemini_Generated_Image_uysqrpuysqrpuysq_nobg.png" 
                      alt="Standing at the crossroads" 
                      class="character-sprite choices-sprite">
             </div>
@@ -180,7 +186,7 @@ helped build the life we cherish today.</p>
                     <div class="choice-card glass-card">
                         <div class="choice-icon">🌟</div>
                         <h3>His Dreams</h3>
-                        <p class="choice-detail" style="display:none">He had dreams of his own. Ambitions. Passions. A life he could have lived just for himself.</p>
+                        <p class="choice-detail" style="display:none">He had his own dreams. His own ambitions. A life he could have lived just for himself.</p>
                         <span class="tap-hint">Tap to reveal</span>
                     </div>
                 </div>
@@ -193,14 +199,14 @@ helped build the life we cherish today.</p>
                     <div class="choice-card glass-card selected">
                         <div class="choice-icon">👨‍👩‍👧‍👦</div>
                         <h3>His Family</h3>
-                        <p class="choice-detail" style="display:none">But he chose us. Every single time. Without hesitation. Without regret. He chose to give us everything.</p>
+                        <p class="choice-detail" style="display:none">You chose your family. You chose our happiness. You chose our future. Every single time.</p>
                         <span class="tap-hint">Tap to reveal</span>
                     </div>
                 </div>
             </div>
 
             <div class="choices-conclusion glass-card fade-in-up" data-delay="600">
-                <p class="typewriter-text">At every crossroad in life, he chose the path<br>that led to <strong>our</strong> happiness.</p>
+                <p class="typewriter-text">Again and again, when life presented choices,<br>you chose <strong>us</strong>.</p>
             </div>
         </div>
     </section>
@@ -225,16 +231,10 @@ helped build the life we cherish today.</p>
 
             <div class="sacrifice-quotes" data-stagger="400">
                 <blockquote class="sacrifice-quote fade-in-up">
-                    <p>He stayed awake so we could sleep peacefully.</p>
+                    <p>Many of the things you gave up<br>were never spoken about.</p>
                 </blockquote>
                 <blockquote class="sacrifice-quote fade-in-up">
-                    <p>He went without so we never had to.</p>
-                </blockquote>
-                <blockquote class="sacrifice-quote fade-in-up">
-                    <p>He carried the weight of the world<br>and made it look effortless.</p>
-                </blockquote>
-                <blockquote class="sacrifice-quote fade-in-up">
-                    <p class="highlight-gold">And he never once complained.</p>
+                    <p class="highlight-gold">Yet those unseen sacrifices became the foundation<br>of everything we have today.</p>
                 </blockquote>
             </div>
         </div>
@@ -258,10 +258,9 @@ helped build the life we cherish today.</p>
             </div>
 
             <div class="built-text glass-card fade-in-up" data-delay="300">
-                <p>Brick by brick. Day by day.</p>
-                <p>He built more than walls and a roof.</p>
-                <p class="highlight-gold">He built a home filled with love,<br>warmth, and safety.</p>
-                <p>Every light in that window? That's his doing.<br>Every smile inside? That's his gift.</p>
+                <p>A house is made of walls and a roof.</p>
+                <p class="highlight-gold">A home is built with love, care,<br>protection, and dedication.</p>
+                <p>Thank you for building ours.</p>
             </div>
         </div>
     </section>
@@ -287,9 +286,8 @@ helped build the life we cherish today.</p>
 
             <div class="roots-text glass-card fade-in-up" data-delay="300">
                 <p>Like the roots of a great tree,</p>
-                <p>he held everything together — <em>unseen, unshaken.</em></p>
-                <p class="highlight-gold">His strength became our foundation.<br>His sacrifices became our wings.</p>
-                <p>Because of him, the branches could reach the sky.</p>
+                <p>your strength often remained <em>unseen.</em></p>
+                <p class="highlight-gold">Yet because of those roots,<br>all of us were able to grow.</p>
             </div>
         </div>
     </section>
@@ -305,8 +303,7 @@ helped build the life we cherish today.</p>
             <h2 class="chapter-title shimmer-text fade-in-up">The Real Hero</h2>
             
             <p class="reveal-intro fade-in-up" data-delay="200">
-                This story isn't fiction.<br>
-                This hero is real.
+                The hero of this story was never fictional.
             </p>
 
             <div class="reveal-frame fade-in-up scale-in" data-delay="500">
@@ -320,9 +317,7 @@ helped build the life we cherish today.</p>
             </div>
 
             <div class="reveal-text fade-in-up" data-delay="800">
-                <p class="reveal-statement">Every step in this story was his.</p>
-                <p class="reveal-statement">Every sacrifice was real.</p>
-                <p class="reveal-statement highlight-gold">Every moment of love — <em>all him.</em></p>
+                <p class="reveal-statement highlight-gold">It was always you.</p>
             </div>
         </div>
     </section>
@@ -343,26 +338,50 @@ helped build the life we cherish today.</p>
                 </div>
             </div>
 
-            <div class="finale-message" data-stagger="600">
-                <p class="finale-line fade-in-up">You spent your life making sure<br>our wishes came true.</p>
-                <p class="finale-line fade-in-up">You never stopped walking.</p>
-                <p class="finale-line fade-in-up">You never stopped caring.</p>
-                <p class="finale-line fade-in-up">You never stopped being there.</p>
-                <p class="finale-line fade-in-up thank-you">Thank you for everything.</p>
+            <div class="finale-part" id="finalePart1">
+                <div class="finale-birthday fade-in-up" data-delay="400">
+                    <h2 class="birthday-text">
+                        <span class="birthday-line">Happy Birthday</span>
+                        <span class="birthday-name gradient-text">Papa</span>
+                        <span class="birthday-heart" id="birthdayHeart">❤️</span>
+                    </h2>
+                </div>
+
+                <div class="finale-character fade-in-up" data-delay="1200">
+                    <img src="assets/Gemini_Generated_Image_ef60hcef60hcef60 (1)_nobg.png" 
+                         alt="Papa" 
+                         class="character-sprite finale-sprite">
+                </div>
+
+                <div class="finale-message" data-stagger="500">
+                    <p class="finale-line fade-in-up">Thank you for every early morning.</p>
+                    <p class="finale-line fade-in-up">Thank you for every late night.</p>
+                    <p class="finale-line fade-in-up">Thank you for every worry you carried alone.</p>
+                    <p class="finale-line fade-in-up">Thank you for every dream<br>you helped us achieve.</p>
+                    <p class="finale-line fade-in-up thank-you">Thank you for always putting us<br>before yourself.</p>
+                </div>
             </div>
 
-            <div class="finale-birthday fade-in-up" data-delay="3600">
-                <h2 class="birthday-text">
-                    <span class="birthday-line">Happy Birthday</span>
-                    <span class="birthday-name gradient-text">Papa</span>
-                    <span class="birthday-heart" id="birthdayHeart">❤️</span>
-                </h2>
-            </div>
+            <div class="finale-part" id="finalePart2">
+                <div class="finale-final glass-card fade-in-up" data-delay="4800">
+                    <p class="finale-line">No matter how far we go,</p>
+                    <p class="finale-line">no matter how much time passes,</p>
+                    <p class="finale-line">one thing will always remain true:</p>
+                    <p class="finale-line highlight-gold" style="margin-top: 1rem;">We are proud to be your family.</p>
+                    <p class="finale-line highlight-gold">We are grateful for everything you have done.</p>
+                    <p class="finale-line highlight-gold">We love you more than words can express.</p>
+                </div>
 
-            <div class="finale-character fade-in-up" data-delay="4200">
-                <img src="assets/Gemini_Generated_Image_ef60hcef60hcef60 (1).png" 
-                     alt="Papa" 
-                     class="character-sprite finale-sprite">
+                <div class="finale-closing fade-in-up" data-delay="6000">
+                    <h3 class="birthday-text" style="margin-top: 1.5rem;">
+                        <span class="birthday-line" style="font-size: 1.3rem;">Happy Birthday, Papa</span>
+                        <span style="font-size: 2rem;">❤️🎂</span>
+                    </h3>
+                </div>
+                
+                <div class="finale-video-container fade-in-up" style="margin-top: 2.5rem;">
+                    <video id="cakeVideo" src="assets/animate_this_and_cut_a_piece.mp4" playsinline loop style="width: 100%; max-width: 400px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 2px solid rgba(255, 215, 0, 0.2);"></video>
+                </div>
             </div>
 
             <div class="tap-celebration" id="tapCelebration">

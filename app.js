@@ -139,9 +139,38 @@
 
   function initAudio() {
     const btn = document.querySelector('.audio-toggle');
-    if (!btn) return;
+    if (btn) {
+      btn.addEventListener('click', toggleAudio);
+    }
 
-    btn.addEventListener('click', toggleAudio);
+    // Auto-play logic: wait for the first user interaction (click, touch, or scroll)
+    // to satisfy browser autoplay policies before attempting to create the AudioContext.
+    let hasInteracted = false;
+    function startAudioOnInteraction() {
+      if (hasInteracted) return;
+      hasInteracted = true;
+      
+      // If audio was never turned on, or if the browser blocked it (suspended state), turn/resume it!
+      if (!state.audioEnabled) {
+        toggleAudio();
+      } else if (state.audioContext && state.audioContext.state === 'suspended') {
+        state.audioContext.resume();
+      }
+      
+      // Remove listeners
+      document.removeEventListener('click', startAudioOnInteraction);
+      document.removeEventListener('touchstart', startAudioOnInteraction);
+      document.removeEventListener('keydown', startAudioOnInteraction);
+      window.removeEventListener('scroll', startAudioOnInteraction);
+      window.removeEventListener('wheel', startAudioOnInteraction);
+    }
+    
+    // Listen for any user interaction anywhere on the document (including scrolling!)
+    document.addEventListener('click', startAudioOnInteraction, { passive: true });
+    document.addEventListener('touchstart', startAudioOnInteraction, { passive: true });
+    document.addEventListener('keydown', startAudioOnInteraction, { passive: true });
+    window.addEventListener('scroll', startAudioOnInteraction, { passive: true });
+    window.addEventListener('wheel', startAudioOnInteraction, { passive: true });
   }
 
   /** Build the oscillator stack (called once on first unmute). */
@@ -155,33 +184,82 @@
     master.connect(ctx.destination);
     state.gainNode = master;
 
-    // Warm pad: stacked sine waves at harmonic intervals
-    const freqs = [110, 164.81, 220, 329.63]; // A2, E3, A3, E4
-    const volumes = [0.08, 0.05, 0.04, 0.02];
+    // Happy Birthday melody in C major
+    const melody = [
+      { f: 392.00, d: 0.5 }, // Hap-
+      { f: 392.00, d: 0.5 }, // py
+      { f: 440.00, d: 1.0 }, // birth-
+      { f: 392.00, d: 1.0 }, // day
+      { f: 523.25, d: 1.0 }, // to
+      { f: 493.88, d: 2.0 }, // you
+      
+      { f: 392.00, d: 0.5 },
+      { f: 392.00, d: 0.5 },
+      { f: 440.00, d: 1.0 },
+      { f: 392.00, d: 1.0 },
+      { f: 587.33, d: 1.0 },
+      { f: 523.25, d: 2.0 },
+      
+      { f: 392.00, d: 0.5 },
+      { f: 392.00, d: 0.5 },
+      { f: 783.99, d: 1.0 },
+      { f: 659.25, d: 1.0 },
+      { f: 523.25, d: 1.0 },
+      { f: 493.88, d: 1.0 },
+      
+      { f: 698.46, d: 0.5 },
+      { f: 698.46, d: 0.5 },
+      { f: 659.25, d: 1.0 },
+      { f: 523.25, d: 1.0 },
+      { f: 587.33, d: 1.0 },
+      { f: 523.25, d: 2.5 }
+    ];
 
-    freqs.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.value = volumes[i];
+    let noteIndex = 0;
+    let nextNoteTime = ctx.currentTime + 0.1;
+    const tempo = 1.1; // seconds per beat
 
-      // Slow detune shimmer
-      const lfo = ctx.createOscillator();
-      const lfoGain = ctx.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.value = 0.15 + i * 0.05;
-      lfoGain.gain.value = 1.5;
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.detune);
-      lfo.start();
-
-      osc.connect(gain);
-      gain.connect(master);
-      osc.start();
-
-      state.oscillators.push(osc, lfo);
-    });
+    function scheduleNotes() {
+      if (state.audioContext.state === 'suspended') {
+        state.audioTimer = setTimeout(scheduleNotes, 500);
+        return;
+      }
+      
+      while (nextNoteTime < ctx.currentTime + 0.1) {
+        const note = melody[noteIndex];
+        
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'triangle';
+        osc.frequency.value = note.f;
+        
+        // Soft attack and decay
+        gain.gain.setValueAtTime(0, nextNoteTime);
+        gain.gain.linearRampToValueAtTime(0.15, nextNoteTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, nextNoteTime + (note.d * tempo) - 0.1);
+        
+        osc.connect(gain);
+        gain.connect(master);
+        
+        osc.start(nextNoteTime);
+        osc.stop(nextNoteTime + (note.d * tempo));
+        
+        nextNoteTime += note.d * tempo;
+        noteIndex = (noteIndex + 1) % melody.length;
+        
+        if (noteIndex === 0) {
+          nextNoteTime += 2.0; // Pause before looping
+        }
+      }
+      state.audioTimer = setTimeout(scheduleNotes, 50);
+    }
+    
+    // Begin scheduling
+    scheduleNotes();
+    
+    // Save to state so we can stop it if needed
+    state.startMelody = scheduleNotes;
   }
 
   /** Toggle mute / unmute with smooth ramp. */
@@ -245,7 +323,7 @@
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.2 }
     );
 
     chapters.forEach((ch) => observer.observe(ch));
@@ -552,9 +630,17 @@
     if (state.particleSystemsInited['confetti']) return;
     state.particleSystemsInited['confetti'] = true;
 
-    confettiCanvas = createCanvasOverlay('chapter-finale');
+    confettiCanvas = document.getElementById('confettiCanvas');
     if (!confettiCanvas) return;
     confettiCtx = confettiCanvas.getContext('2d');
+    
+    function resizeConfetti() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    resizeConfetti();
+    window.addEventListener('resize', resizeConfetti);
+    
     confettiPieces = [];
 
     function animate() {
@@ -636,19 +722,12 @@
     const chapter = document.getElementById('chapter-finale');
     if (!chapter) return;
 
-    // Reuse confetti canvas or create new
-    fireworkCanvas = chapter.querySelector('canvas.fireworks-canvas');
-    if (!fireworkCanvas) {
-      fireworkCanvas = document.createElement('canvas');
-      fireworkCanvas.classList.add('firework-canvas');
-      fireworkCanvas.style.cssText =
-        'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4;';
-      chapter.appendChild(fireworkCanvas);
-    }
+    fireworkCanvas = document.getElementById('fireworksCanvas');
+    if (!fireworkCanvas) return;
 
     function resize() {
-      fireworkCanvas.width = chapter.offsetWidth;
-      fireworkCanvas.height = chapter.offsetHeight;
+      fireworkCanvas.width = window.innerWidth;
+      fireworkCanvas.height = window.innerHeight;
     }
     resize();
     window.addEventListener('resize', resize);
@@ -836,7 +915,7 @@
             y: 0,
             filter: 'blur(0px)',
             duration: 1.2,
-            delay: 0.8 + i * 0.6,
+            delay: 0.5 + i * 0.4,
             ease: 'power3.out',
             onComplete: () => line.classList.add('visible'),
           }
@@ -844,15 +923,15 @@
       });
     }
 
-    // ── Subtitle fade-in after title ──
-    const subtitle = chapter.querySelector('.intro-subtitle');
-    if (subtitle) {
+    // ── Subtitles fade-in after title ──
+    const subtitles = chapter.querySelectorAll('.intro-subtitle');
+    subtitles.forEach((subtitle, i) => {
       gsap.fromTo(
         subtitle,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1.2, delay: 3.2, ease: 'power2.out' }
+        { opacity: 1, y: 0, duration: 1.2, delay: 2.2 + (i * 0.35), ease: 'power2.out' }
       );
-    }
+    });
 
     // ── Intro character fade-in ──
     const introChar = chapter.querySelector('.intro-character');
@@ -860,7 +939,7 @@
       gsap.fromTo(
         introChar,
         { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1, delay: 3.8, ease: 'power2.out' }
+        { opacity: 1, y: 0, duration: 1, delay: 2.8, ease: 'power2.out' }
       );
     }
 
@@ -870,7 +949,7 @@
       gsap.fromTo(
         btn,
         { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 1, delay: 4.5, ease: 'back.out(1.5)' }
+        { opacity: 1, scale: 1, duration: 1, delay: 3.5, ease: 'back.out(1.5)' }
       );
 
       // Gentle pulse loop
@@ -880,7 +959,7 @@
         duration: 1.2,
         repeat: -1,
         yoyo: true,
-        delay: 5.5,
+        delay: 4.5,
         ease: 'sine.inOut',
       });
 
@@ -1026,7 +1105,7 @@
           }, delay * 1000);
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.15 }
     );
 
     observer.observe(el);
@@ -1090,19 +1169,19 @@
               opacity: 1,
               x: 0,
               duration: 1.2,
-              delay: 0.5,
+              delay: 0.2,
               ease: 'power3.out',
             });
             gsap.to(paths[1], {
               opacity: 1,
               x: 0,
               duration: 1.2,
-              delay: 0.8,
+              delay: 0.4,
               ease: 'power3.out',
             });
           }
         },
-        { threshold: 0.4 }
+        { threshold: 0.15 }
       );
       observer.observe(chapter);
 
@@ -1146,38 +1225,17 @@
         {
           opacity: 1,
           scale: 1,
-          duration: 1.5,
-          delay: 1,
+          duration: 1.2,
+          delay: 0.3,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: chapter,
-            start: 'top center',
-            toggleActions: 'play none none reverse',
+            start: 'top 75%',
+            toggleActions: 'play none none none',
           },
         }
       );
     }
-
-    // Text stagger
-    const texts = chapter.querySelectorAll('.fade-in-up');
-    texts.forEach((t, i) => {
-      gsap.fromTo(
-        t,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          delay: 1.2 + i * 0.3,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: chapter,
-            start: 'top center',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
-    });
   }
 
   /* ── 6-4  CHAPTER 4 — SACRIFICES ───────────────────────────── */
@@ -1223,7 +1281,7 @@
           opacity: 1,
           y: 0,
           duration: 1,
-          delay: 0.8 + i * 0.6,
+          delay: 0.4 + i * 0.4,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: chapter,
@@ -1280,7 +1338,7 @@
           y: 0,
           textShadow: '0 0 15px rgba(255,200,50,0.3)',
           duration: 1,
-          delay: 0.5 + i * 0.4,
+          delay: 0.3 + i * 0.3,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: chapter,
@@ -1341,7 +1399,7 @@
           opacity: 1,
           y: 0,
           duration: 1,
-          delay: 0.6 + i * 0.5,
+          delay: 0.4 + i * 0.35,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: chapter,
@@ -1455,7 +1513,7 @@
           playRevealSequence(chapter);
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.2 }
     );
     observer.observe(chapter);
   }
@@ -1466,7 +1524,7 @@
     // ── Dramatic dark overlay ──
     const overlay = chapter.querySelector('.reveal-darkness');
     if (overlay) {
-      tl.fromTo(overlay, { opacity: 1 }, { opacity: 0, duration: 2, delay: 1 });
+      tl.fromTo(overlay, { opacity: 1 }, { opacity: 0, duration: 2, delay: 0.2 });
     }
 
     // ── Celebration image reveal with scale + blur ──
@@ -1568,7 +1626,7 @@
           playFinaleSequence(chapter);
         }
       },
-      { threshold: 0.35 }
+      { threshold: 0.15 }
     );
     observer.observe(chapter);
 
@@ -1577,6 +1635,14 @@
       burstConfetti(60);
       if (fireworkCanvas) launchFirework();
     });
+
+    // Continuous automatic celebration loop
+    setInterval(() => {
+      if (state.chapterVisible['chapter-finale'] && finaleTriggered) {
+        if (Math.random() > 0.3) burstConfetti(40);
+        if (fireworkCanvas && Math.random() > 0.4) launchFirework();
+      }
+    }, 2000);
   }
 
   function playFinaleSequence(chapter) {
@@ -1606,45 +1672,81 @@
       }
     }
 
-    // ── Confetti bursts in waves ──
-    tl.call(() => burstConfetti(100), null, '+=0.5');
-    tl.call(() => burstConfetti(80), null, '+=1.5');
-    tl.call(() => burstConfetti(60), null, '+=2');
-
-    // ── Fireworks volley ──
-    tl.call(() => launchFireworkVolley(), null, '+=0.5');
-    tl.call(() => launchFireworkVolley(), null, '+=3');
-
-    // ── Final message lines with emotional pacing ──
-    const messages = [
-      'You spent your life making sure our wishes came true.',
-      'You never stopped walking.',
-      'You never stopped caring.',
-      'You never stopped being there.',
-      'Thank you for everything.',
-    ];
-
-    const messageContainer = chapter.querySelector('.finale-message') || chapter;
-    const messageEls = messageContainer.querySelectorAll('.finale-line');
-
-    // Use existing elements if available, otherwise create them
-    if (messageEls.length >= messages.length) {
-      messageEls.forEach((el, i) => {
-        tl.fromTo(
-          el,
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' },
-          `+=${i === 0 ? 1 : 1.4}`
-        );
-      });
-    }
-
-    // ── Big birthday text ──
+    // ── First Big birthday text ──
     const bigText = chapter.querySelector('.finale-birthday');
     if (bigText) {
       tl.fromTo(
         bigText,
-        { opacity: 0, scale: 0.6, y: 30 },
+        { opacity: 0, scale: 0.8, y: 30 },
+        { opacity: 1, scale: 1, y: 0, duration: 1.5, ease: 'power2.out' },
+        '-=0.5'
+      );
+      
+      // Heart pulse
+      const heart = bigText.querySelector('.birthday-heart');
+      if (heart) {
+        gsap.to(heart, {
+          scale: 1.2,
+          duration: 0.5,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+        });
+      }
+    }
+
+    // ── Character fade-in ──
+    const char = chapter.querySelector('.finale-character');
+    if (char) {
+      tl.fromTo(
+        char,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' },
+        '-=0.8'
+      );
+    }
+
+    // ── Confetti bursts in waves ──
+    tl.call(() => burstConfetti(100), null, '-=1');
+    tl.call(() => burstConfetti(80), null, '+=1.5');
+    
+    // ── Fireworks volley ──
+    tl.call(() => launchFireworkVolley(), null, '-=2');
+
+    // ── Thank you messages ──
+    const messageContainer = chapter.querySelector('.finale-message');
+    if (messageContainer) {
+      const messageEls = messageContainer.querySelectorAll('.finale-line');
+      messageEls.forEach((el, i) => {
+        tl.fromTo(
+          el,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1, ease: 'power2.out' },
+          i === 0 ? '-=1.5' : '+=0.8'
+        );
+      });
+    }
+
+    // ── Final Screen Message ──
+    const finalContainer = chapter.querySelector('.finale-final');
+    if (finalContainer) {
+      const finalEls = finalContainer.querySelectorAll('.finale-line');
+      finalEls.forEach((el, i) => {
+        tl.fromTo(
+          el,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1, ease: 'power2.out' },
+          `+=${i === 0 ? 0.2 : 0.3}`
+        );
+      });
+    }
+
+    // ── Closing "Happy Birthday Papa" ──
+    const closingText = chapter.querySelector('.finale-closing');
+    if (closingText) {
+      tl.fromTo(
+        closingText,
+        { opacity: 0, scale: 0.8, y: 30 },
         {
           opacity: 1,
           scale: 1,
@@ -1652,32 +1754,30 @@
           duration: 1.5,
           ease: 'elastic.out(1, 0.5)',
         },
-        '+=1'
+        '+=0.4'
       );
+      
+      const cakeVideoContainer = chapter.querySelector('.finale-video-container');
+      const cakeVideo = document.getElementById('cakeVideo');
+      if (cakeVideoContainer) {
+        tl.fromTo(
+          cakeVideoContainer,
+          { opacity: 0, scale: 0.9, y: 20 },
+          { opacity: 1, scale: 1, y: 0, duration: 1.2, ease: 'power2.out' },
+          '-=1'
+        );
+        tl.call(() => {
+          if (cakeVideo) {
+            cakeVideo.volume = 1.0;
+            cakeVideo.play().catch(e => console.log('Video autoplay blocked:', e));
+          }
+        });
+      }
 
       // More confetti & fireworks on big reveal
       tl.call(() => {
         burstConfetti(150);
         launchFireworkVolley();
-      });
-    }
-
-    // ── Heart pulse ──
-    const heart = chapter.querySelector('.birthday-heart');
-    if (heart) {
-      tl.fromTo(
-        heart,
-        { opacity: 0, scale: 0 },
-        { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(2)' },
-        '-=0.5'
-      );
-      gsap.to(heart, {
-        scale: 1.2,
-        duration: 0.5,
-        repeat: -1,
-        yoyo: true,
-        delay: tl.duration() + 0.5,
-        ease: 'sine.inOut',
       });
     }
 
@@ -1695,12 +1795,13 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
         // Reset finale flag after scroll
         setTimeout(() => {
-          const ch = document.getElementById('chapter-finale');
-          if (ch) {
-            ch.querySelectorAll('.finale-line, .finale-birthday, .birthday-heart, .restart-btn, .finale-cake, .tap-celebration').forEach((el) => {
-              gsap.set(el, { clearProps: 'all' });
-            });
-          }
+            const ch = document.getElementById('chapter-finale');
+            if (ch) {
+              ch.querySelectorAll('.finale-line, .finale-birthday, .birthday-heart, .restart-btn, .finale-cake, .tap-celebration, .finale-character, .finale-final, .finale-closing, .finale-part').forEach((el) => {
+                gsap.set(el, { clearProps: 'all' });
+              });
+              finaleTriggered = false; // Reset the trigger flag
+            }
         }, 1500);
       });
     }
@@ -1895,13 +1996,33 @@
       bootApp();
     }, 8000);
 
-    // Preload → Hide loading → Init everything
+    // Preload → Show Start Button → Init everything on click
     preloadAssets().then(() => {
       clearTimeout(safetyTimer);
-      hideLoadingScreen();
-
-      // Stagger init slightly so UI doesn't choke
-      setTimeout(bootApp, 300);
+      
+      const spinner = document.getElementById('loadingSpinner');
+      const startContent = document.getElementById('startContent');
+      const startBtn = document.getElementById('startBtn');
+      const icon = document.querySelector('.loading-icon');
+      
+      if (spinner) spinner.style.display = 'none';
+      if (icon) icon.style.display = 'none';
+      
+      if (startContent && startBtn) {
+        startContent.style.display = 'block';
+        startBtn.addEventListener('click', () => {
+          // Play audio on this explicit user gesture
+          if (!state.audioEnabled) {
+            toggleAudio();
+          }
+          hideLoadingScreen();
+          setTimeout(bootApp, 300);
+        });
+      } else {
+        // Fallback
+        hideLoadingScreen();
+        setTimeout(bootApp, 300);
+      }
     });
   });
 
